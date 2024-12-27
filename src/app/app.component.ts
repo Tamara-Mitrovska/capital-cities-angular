@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ChartType } from 'angular-google-charts';
 
 @Component({
   selector: 'app-root',
