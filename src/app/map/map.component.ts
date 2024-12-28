@@ -14,7 +14,7 @@ export class MapComponent implements AfterViewInit, OnInit {
   
   chartType = ChartType.GeoChart;
 
-  chartData = [
+  chartData: [string, number][] = [
     ["Russia", 0],
     ["Germany", 1],
     ["United States", 2],
@@ -29,13 +29,16 @@ export class MapComponent implements AfterViewInit, OnInit {
   }
 
   countries: Country[] = [];
+  randomCountry?: Country;
+  attemptedCapitals: string[] = [];
 
   constructor(private mapService: MapService) {}
 
   ngOnInit(): void {
     this.mapService.getAllCounties().subscribe(countries => {
       this.countries = countries;
-      this.chartData = countries.map(c => [c.code, 0])
+      this.chartData = countries.map(c => [c.code, 0]);
+      this.randomCountry = this.getRandomCountry(this.countries);
     })
   }
 
@@ -52,8 +55,22 @@ export class MapComponent implements AfterViewInit, OnInit {
     const selection = chart.getSelection();
     if (selection.length > 0) {
       const selectedItem = selection[0];
-      const country = this.chartData[selectedItem.row][0];
-      console.log(`Selected country: ${country}`);
+      const selectedCountry = this.chartData[selectedItem.row][0];
+      if (this.randomCountry) {
+        this.updateChartData(this.randomCountry.code, selectedCountry === this.randomCountry.code ? 2 : 1);
+        this.attemptedCapitals.includes(this.randomCountry.capital);
+        this.randomCountry = this.getRandomCountry(this.countries.filter(c => !this.attemptedCapitals.includes(c.capital)));
+      }
+      console.log(`Selected country: ${selectedCountry}`);
     }
+  }
+
+  getRandomCountry(countries: Country[]) {
+    const i = Math.floor(Math.random() * countries.length);
+    return countries[i];
+  }
+
+  updateChartData(countryCode: string, colorValue: number) {
+    this.chartData = this.chartData.map(row => [row[0], countryCode === row[0] ? colorValue : row[1]]);
   }
 }
