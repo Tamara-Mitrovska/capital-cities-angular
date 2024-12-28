@@ -37,6 +37,7 @@ export class MapComponent implements AfterViewInit {
     if (selection.length > 0) {
       const selectedItem = selection[0];
       const country = this.chartData[selectedItem.row][0];
+      console.log(`Selected country: ${country}`);
     }
   }
 }
