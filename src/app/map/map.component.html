@@ -1,11 +1,17 @@
-<div>
-  <button *ngFor="let region of regions" (click)="onRegionSelect(region)">
-    {{region}}
-  </button>
+<div class="map">
+  <div class="map__regions">
+    <button class="map__region-button"
+      [ngClass]="{'map__region-button--selected': region === selectedRegion}"
+       *ngFor="let region of regions" (click)="onRegionSelect(region)">
+      {{region}}
+    </button>
+  </div>
+  <div class="map__capital" *ngIf="randomCountry">{{randomCountry.capital}}</div>
+  <google-chart #googleChart
+    [width]="chartWidth"
+    [type]="chartType"
+    [data]="chartData"
+    [options]="chartOptions">
+  </google-chart> 
+  <div id="chart-div"></div>
 </div>
-<div *ngIf="randomCountry">{{randomCountry.capital}}</div>
-<google-chart #googleChart
-  [type]="chartType"
-  [data]="chartData"
-  [options]="chartOptions">
-</google-chart>

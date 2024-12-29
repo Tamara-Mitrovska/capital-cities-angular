@@ -1,7 +1,10 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ChartType, GoogleChartComponent, GoogleChartsConfig } from 'angular-google-charts';
 import { MapService } from './map.service';
 import { Country, REGION_CODES } from './map.domain';
+import { withDebugTracing } from '@angular/router';
+
+const CHART_WIDTH_PCT = 0.9;
 
 @Component({
   selector: 'app-map',
@@ -13,6 +16,8 @@ export class MapComponent implements AfterViewInit, OnInit {
   @ViewChild('googleChart', {static: true}) googleChart!: GoogleChartComponent;
 
   selectedRegion: string = 'Europe';
+
+  chartWidth = window.innerWidth * CHART_WIDTH_PCT;
   
   chartType = ChartType.GeoChart;
 
@@ -27,7 +32,7 @@ export class MapComponent implements AfterViewInit, OnInit {
     displayMode: 'regions',
     colorAxis: { colors: ['grey', 'red', 'green'], values: [0, 1, 2] },
     legend: 'none',
-    tooltip: {}
+    keepAspectRatio: true
   }
 
   regions = [...REGION_CODES.keys()];
@@ -48,6 +53,7 @@ export class MapComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     if (this.googleChart) {
+      this.googleChart.dynamicResize = true;
       this.googleChart.ready.subscribe(_ => {
         const chart = this.googleChart.chartWrapper.getChart();
         google.visualization.events.addListener(chart, 'select', () => this.onSelect(chart));
@@ -86,5 +92,10 @@ export class MapComponent implements AfterViewInit, OnInit {
     };
     this.randomCountry = this.getRandomCountry(this.countries.filter(c => c.region === region));
     this.attemptedCapitals = [];
+  }
+
+  @HostListener('window:resize', ['event'])
+  onWindowResize(event: any) {
+    this.chartWidth = window.innerWidth * CHART_WIDTH_PCT;
   }
 }
