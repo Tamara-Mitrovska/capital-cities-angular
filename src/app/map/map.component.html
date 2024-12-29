@@ -1,3 +1,8 @@
+<div>
+  <button *ngFor="let region of regions" (click)="onRegionSelect(region)">
+    {{region}}
+  </button>
+</div>
 <div *ngIf="randomCountry">{{randomCountry.capital}}</div>
 <google-chart #googleChart
   [type]="chartType"
